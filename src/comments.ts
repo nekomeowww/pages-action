@@ -37,7 +37,7 @@ async function findComment(
     comments.forEach(c => debug(JSON.stringify(c)))
     // Search each page for the comment
     const comment = comments.find((comment) =>
-      findCommentPredicate(ctx.repo.owner, bodyIncludes, comment)
+      findCommentPredicate(bodyIncludes, comment)
     );
     if (comment) return comment;
   }
@@ -54,14 +54,10 @@ async function findComment(
  * @returns
  */
 function findCommentPredicate(
-  commentAuthor: string,
   bodyIncludes: string,
   comment: Comment
 ): boolean {
   return (
-    (commentAuthor && comment.user
-      ? comment.user.login === commentAuthor
-      : true) &&
     (bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true)
   );
 }

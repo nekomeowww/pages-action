@@ -23131,15 +23131,15 @@ async function findComment(octokit, ctx, bodyIncludes) {
   )) {
     comments.forEach((c) => (0, import_core.debug)(JSON.stringify(c)));
     const comment = comments.find(
-      (comment2) => findCommentPredicate(ctx.repo.owner, bodyIncludes, comment2)
+      (comment2) => findCommentPredicate(bodyIncludes, comment2)
     );
     if (comment)
       return comment;
   }
   return void 0;
 }
-function findCommentPredicate(commentAuthor, bodyIncludes, comment) {
-  return (commentAuthor && comment.user ? comment.user.login === commentAuthor : true) && (bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true);
+function findCommentPredicate(bodyIncludes, comment) {
+  return bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true;
 }
 var cloudflarePagesDeploymentStatusCommentTemplate = (projectName, commit, url, aliasUrl, textReplacementMap, titleReplacement) => {
   return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement.trim() || "Cloudflare Pages Deployment"}
