@@ -8,6 +8,8 @@ import yaml from 'js-yaml'
 import { PullRequest } from "@octokit/webhooks-types";
 
 try {
+  debug(context.payload)
+
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
@@ -93,7 +95,8 @@ try {
     debug(`Pages Deployment: ${JSON.stringify(pagesDeployment)}`);
 
     const deploymentUrl = pagesDeployment.url;
-    const deploymentAliasUrl = pagesDeployment.aliases?.[0] || '';
+    // branch alias url generate by following the rules specified on https://developers.cloudflare.com/pages/platform/preview-deployments/#preview-aliases
+    const deploymentAliasUrl = pagesDeployment.aliases?.[0] || branch && `https://${branch.replace(/[^a-zA-Z0-9]+/gi, '-')}.${projectName}.pages.dev` || ''; 
 
     setOutput("id", pagesDeployment.id);
     setOutput("url", deploymentUrl);

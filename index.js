@@ -25869,6 +25869,7 @@ var js_yaml_default = jsYaml;
 
 // src/index.ts
 try {
+  (0, import_core2.debug)(import_github2.context.payload);
   const apiToken = (0, import_core2.getInput)("apiToken", { required: true });
   const accountId = (0, import_core2.getInput)("accountId", { required: true });
   const projectName = (0, import_core2.getInput)("projectName", { required: true });
@@ -25937,7 +25938,7 @@ try {
     const pagesDeployment = await createPagesDeployment();
     (0, import_core2.debug)(`Pages Deployment: ${JSON.stringify(pagesDeployment)}`);
     const deploymentUrl = pagesDeployment.url;
-    const deploymentAliasUrl = pagesDeployment.aliases?.[0] || "";
+    const deploymentAliasUrl = pagesDeployment.aliases?.[0] || branch && `https://${branch.replace(/[^a-zA-Z0-9]+/gi, "-")}.${projectName}.pages.dev` || "";
     (0, import_core2.setOutput)("id", pagesDeployment.id);
     (0, import_core2.setOutput)("url", deploymentUrl);
     (0, import_core2.setOutput)("alias_url", deploymentAliasUrl);
