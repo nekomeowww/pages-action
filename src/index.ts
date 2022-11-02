@@ -5,17 +5,15 @@ import { fetch } from "undici";
 import { createOrUpdateDeploymentComment } from "./comments";
 import { Deployment } from "./types";
 import yaml from 'js-yaml'
+import { PullRequest } from "@octokit/webhooks-types";
 
 try {
-  debug(JSON.stringify(context))
-  console.log(JSON.stringify(context))
-
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
   const directory = getInput("directory", { required: true });
   const gitHubToken = getInput("gitHubToken", { required: true });
-  const branch = getInput("branch", { required: false });
+  const branch = getInput("branch", { required: false }) || context.payload.pull_request ? (context.payload.pull_request as PullRequest).head.ref : 'main';
   const skipGitHubEnvironment = getInput("skipGitHubEnvironment", {required: false}) === 'true';
   const githubEnvirnmentName = getInput("githubEnvirnmentName", {required: false}) || '';
   const commentTextReplacement = getInput("commentTextReplacement", {required: false}) || '';

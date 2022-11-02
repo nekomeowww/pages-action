@@ -2605,8 +2605,8 @@ var require_dist_node2 = __commonJS({
     function isKeyOperator(operator) {
       return operator === ";" || operator === "&" || operator === "?";
     }
-    function getValues(context2, operator, key, modifier) {
-      var value = context2[key], result = [];
+    function getValues(context3, operator, key, modifier) {
+      var value = context3[key], result = [];
       if (isDefined(value) && value !== "") {
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           value = value.toString();
@@ -2666,7 +2666,7 @@ var require_dist_node2 = __commonJS({
         expand: expand.bind(null, template)
       };
     }
-    function expand(template, context2) {
+    function expand(template, context3) {
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function(_, expression, literal) {
         if (expression) {
@@ -2678,7 +2678,7 @@ var require_dist_node2 = __commonJS({
           }
           expression.split(/,/g).forEach(function(variable) {
             var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-            values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
+            values.push(getValues(context3, operator, tmp[1], tmp[2] || tmp[3]));
           });
           if (operator && operator !== "+") {
             var separator = ",";
@@ -7539,11 +7539,11 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
-    function getOctokit2(token, options, ...additionalPlugins) {
+    function getOctokit3(token, options, ...additionalPlugins) {
       const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
       return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
     }
-    exports.getOctokit = getOctokit2;
+    exports.getOctokit = getOctokit3;
   }
 });
 
@@ -12491,18 +12491,18 @@ var require_webidl = __commonJS({
     webidl.errors.exception = function(message) {
       throw new TypeError(`${message.header}: ${message.message}`);
     };
-    webidl.errors.conversionFailed = function(context2) {
-      const plural = context2.types.length === 1 ? "" : " one of";
-      const message = `${context2.argument} could not be converted to${plural}: ${context2.types.join(", ")}.`;
+    webidl.errors.conversionFailed = function(context3) {
+      const plural = context3.types.length === 1 ? "" : " one of";
+      const message = `${context3.argument} could not be converted to${plural}: ${context3.types.join(", ")}.`;
       return webidl.errors.exception({
-        header: context2.prefix,
+        header: context3.prefix,
         message
       });
     };
-    webidl.errors.invalidArgument = function(context2) {
+    webidl.errors.invalidArgument = function(context3) {
       return webidl.errors.exception({
-        header: context2.prefix,
-        message: `"${context2.value}" is an invalid ${context2.type}.`
+        header: context3.prefix,
+        message: `"${context3.value}" is an invalid ${context3.type}.`
       });
     };
     webidl.util.Type = function(V) {
@@ -17171,15 +17171,15 @@ var require_api_request = __commonJS({
         }
         addSignal(this, signal);
       }
-      onConnect(abort, context2) {
+      onConnect(abort, context3) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context2;
+        this.context = context3;
       }
       onHeaders(statusCode, rawHeaders, resume, statusMessage) {
-        const { callback, opaque, abort, context: context2 } = this;
+        const { callback, opaque, abort, context: context3 } = this;
         if (statusCode < 200) {
           if (this.onInfo) {
             const headers2 = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
@@ -17208,7 +17208,7 @@ var require_api_request = __commonJS({
             trailers: this.trailers,
             opaque,
             body,
-            context: context2
+            context: context3
           });
         }
       }
@@ -17346,15 +17346,15 @@ var require_api_stream = __commonJS({
         }
         addSignal(this, signal);
       }
-      onConnect(abort, context2) {
+      onConnect(abort, context3) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context2;
+        this.context = context3;
       }
       onHeaders(statusCode, rawHeaders, resume) {
-        const { factory, opaque, context: context2 } = this;
+        const { factory, opaque, context: context3 } = this;
         if (statusCode < 200) {
           if (this.onInfo) {
             const headers2 = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
@@ -17368,7 +17368,7 @@ var require_api_stream = __commonJS({
           statusCode,
           headers,
           opaque,
-          context: context2
+          context: context3
         });
         if (!res || typeof res.write !== "function" || typeof res.end !== "function" || typeof res.on !== "function") {
           throw new InvalidReturnValueError("expected Writable");
@@ -17556,17 +17556,17 @@ var require_api_pipeline = __commonJS({
         this.res = null;
         addSignal(this, signal);
       }
-      onConnect(abort, context2) {
+      onConnect(abort, context3) {
         const { ret, res } = this;
         assert(!res, "pipeline cannot be retried");
         if (ret.destroyed) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context2;
+        this.context = context3;
       }
       onHeaders(statusCode, rawHeaders, resume) {
-        const { opaque, handler, context: context2 } = this;
+        const { opaque, handler, context: context3 } = this;
         if (statusCode < 200) {
           if (this.onInfo) {
             const headers = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
@@ -17584,7 +17584,7 @@ var require_api_pipeline = __commonJS({
             headers,
             opaque,
             body: this.res,
-            context: context2
+            context: context3
           });
         } catch (err) {
           this.res.on("error", util.nop);
@@ -17668,7 +17668,7 @@ var require_api_upgrade = __commonJS({
         this.context = null;
         addSignal(this, signal);
       }
-      onConnect(abort, context2) {
+      onConnect(abort, context3) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
@@ -17679,7 +17679,7 @@ var require_api_upgrade = __commonJS({
         throw new SocketError("bad upgrade", null);
       }
       onUpgrade(statusCode, rawHeaders, socket) {
-        const { callback, opaque, context: context2 } = this;
+        const { callback, opaque, context: context3 } = this;
         assert.strictEqual(statusCode, 101);
         removeSignal(this);
         this.callback = null;
@@ -17688,7 +17688,7 @@ var require_api_upgrade = __commonJS({
           headers,
           socket,
           opaque,
-          context: context2
+          context: context3
         });
       }
       onError(err) {
@@ -17756,18 +17756,18 @@ var require_api_connect = __commonJS({
         this.abort = null;
         addSignal(this, signal);
       }
-      onConnect(abort, context2) {
+      onConnect(abort, context3) {
         if (!this.callback) {
           throw new RequestAbortedError();
         }
         this.abort = abort;
-        this.context = context2;
+        this.context = context3;
       }
       onHeaders() {
         throw new SocketError("bad connect", null);
       }
       onUpgrade(statusCode, rawHeaders, socket) {
-        const { callback, opaque, context: context2 } = this;
+        const { callback, opaque, context: context3 } = this;
         removeSignal(this);
         this.callback = null;
         const headers = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
@@ -17776,7 +17776,7 @@ var require_api_connect = __commonJS({
           headers,
           socket,
           opaque,
-          context: context2
+          context: context3
         });
       }
       onError(err) {
@@ -22107,7 +22107,7 @@ var require_undici = __commonJS({
 
 // src/index.ts
 var import_core = __toESM(require_core());
-var import_github = __toESM(require_github());
+var import_github2 = __toESM(require_github());
 
 // node_modules/.pnpm/shellac@0.7.2/node_modules/shellac/dist/index.js
 var import_child_process = __toESM(require("child_process"), 1);
@@ -22348,21 +22348,21 @@ ${this.cmd};echo __END_OF_COMMAND_[$?]__
     this.stderr = "";
   }
 };
-async function IfStatement(chunk, context2) {
-  const { interps, last_cmd } = context2;
+async function IfStatement(chunk, context3) {
+  const { interps, last_cmd } = context3;
   const [[val_type, val_id], if_clause, else_clause] = chunk;
   if (val_type !== "VALUE")
     throw new Error("If statements only accept value interpolations, not functions.");
   if (interps[val_id]) {
-    return execute(if_clause, context2);
+    return execute(if_clause, context3);
   } else if (else_clause) {
-    return execute(else_clause, context2);
+    return execute(else_clause, context3);
   } else {
     return last_cmd;
   }
 }
-async function Command2(chunk, context2) {
-  const { interps, cwd, shell, exit_expected } = context2;
+async function Command2(chunk, context3) {
+  const { interps, cwd, shell, exit_expected } = context3;
   const [str2] = chunk;
   const split_cmd = str2.split(/#__(?:FUNCTION|VALUE)_(\d+)__#/g);
   let cmd = "";
@@ -22384,8 +22384,8 @@ async function Command2(chunk, context2) {
   });
   return command.run();
 }
-async function InStatement(chunk, context2) {
-  const { interps } = context2;
+async function InStatement(chunk, context3) {
+  const { interps } = context3;
   const [arg, in_clause] = chunk;
   if (typeof arg === "string") {
     throw new Error("IN statements need an argument token.");
@@ -22404,31 +22404,31 @@ async function InStatement(chunk, context2) {
   if (!new_cwd || typeof new_cwd !== "string")
     throw new Error(`IN statements need a string value to set as the current working dir`);
   return execute(in_clause, {
-    ...context2,
-    cwd: import_path.default.resolve(context2.cwd, new_cwd)
+    ...context3,
+    cwd: import_path.default.resolve(context3.cwd, new_cwd)
   });
 }
-async function Grammar(chunk, context2) {
-  const { last_cmd } = context2;
+async function Grammar(chunk, context3) {
+  const { last_cmd } = context3;
   let new_last_cmd = last_cmd;
   for (const sub of chunk) {
     new_last_cmd = await execute(sub, {
-      ...context2,
+      ...context3,
       last_cmd: new_last_cmd
     });
   }
   return new_last_cmd;
 }
-async function Await(chunk, context2) {
-  const { interps, last_cmd } = context2;
+async function Await(chunk, context3) {
+  const { interps, last_cmd } = context3;
   const [[val_type, val_id]] = chunk;
   if (val_type !== "FUNCTION")
     throw new Error("IN statements only accept function interpolations, not values.");
   await interps[val_id]();
   return last_cmd;
 }
-async function Stdout(chunk, context2) {
-  const { interps, last_cmd, captures } = context2;
+async function Stdout(chunk, context3) {
+  const { interps, last_cmd, captures } = context3;
   const [out_or_err, second] = chunk;
   if (!(out_or_err === "stdout" || out_or_err === "stderr"))
     throw new Error(`Expected only 'stdout' or 'stderr', got: ${out_or_err}`);
@@ -22446,8 +22446,8 @@ async function Stdout(chunk, context2) {
   }
   return last_cmd;
 }
-async function Exitcode(chunk, context2) {
-  const { interps, last_cmd } = context2;
+async function Exitcode(chunk, context3) {
+  const { interps, last_cmd } = context3;
   const [exitcode, second] = chunk;
   if (exitcode !== "exitcode")
     throw new Error(`Expected only 'exitcode', got: ${exitcode}`);
@@ -22463,33 +22463,33 @@ async function Exitcode(chunk, context2) {
   }
   return last_cmd;
 }
-async function ExitsStatement(chunk, context2) {
+async function ExitsStatement(chunk, context3) {
   const [exit_expected, block] = chunk.length > 1 ? [Number(chunk[0][0]), chunk[1]] : [true, chunk[0]];
   return execute(block, {
-    ...context2,
+    ...context3,
     exit_expected
   });
 }
-var execute = async (chunk, context2) => {
+var execute = async (chunk, context3) => {
   if (Array.isArray(chunk)) {
     if (chunk.tag === "command_line" || chunk.tag === "logged_command") {
-      return Command2(chunk, context2);
+      return Command2(chunk, context3);
     } else if (chunk.tag === "if_statement") {
-      return IfStatement(chunk, context2);
+      return IfStatement(chunk, context3);
     } else if (chunk.tag === "in_statement") {
-      return InStatement(chunk, context2);
+      return InStatement(chunk, context3);
     } else if (chunk.tag === "grammar") {
-      return await Grammar(chunk, context2);
+      return await Grammar(chunk, context3);
     } else if (chunk.tag === "await_statement") {
-      return await Await(chunk, context2);
+      return await Await(chunk, context3);
     } else if (chunk.tag === "stdout_statement") {
-      return await Stdout(chunk, context2);
+      return await Stdout(chunk, context3);
     } else if (chunk.tag === "exitcode_statement") {
-      return await Exitcode(chunk, context2);
+      return await Exitcode(chunk, context3);
     } else if (chunk.tag === "exits_statement") {
-      return await ExitsStatement(chunk, context2);
+      return await ExitsStatement(chunk, context3);
     } else {
-      return context2.last_cmd;
+      return context3.last_cmd;
     }
   }
   return null;
@@ -23117,6 +23117,7 @@ var src_default = shellac;
 var import_undici = __toESM(require_undici());
 
 // src/comments.ts
+var import_github = __toESM(require_github());
 async function findComment(octokit, ctx, bodyIncludes) {
   const parameters = {
     owner: ctx.repo.owner,
@@ -23151,7 +23152,7 @@ var cloudflarePagesDeploymentStatusCommentTemplate = (projectName, commit, url, 
 async function createOrUpdateDeploymentComment(octokit, ctx, projectName, url, aliasUrl, textReplacementMap, titleReplacement) {
   const newComment = cloudflarePagesDeploymentStatusCommentTemplate(
     projectName,
-    ctx.sha,
+    import_github.context.payload.pull_request ? import_github.context.payload.pull_request.head.sha : ctx.sha,
     url,
     aliasUrl,
     textReplacementMap,
@@ -25864,19 +25865,17 @@ var js_yaml_default = jsYaml;
 
 // src/index.ts
 try {
-  (0, import_core.debug)(JSON.stringify(import_github.context));
-  console.log(JSON.stringify(import_github.context));
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
   const accountId = (0, import_core.getInput)("accountId", { required: true });
   const projectName = (0, import_core.getInput)("projectName", { required: true });
   const directory = (0, import_core.getInput)("directory", { required: true });
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: true });
-  const branch = (0, import_core.getInput)("branch", { required: false });
+  const branch = (0, import_core.getInput)("branch", { required: false }) || import_github2.context.payload.pull_request ? import_github2.context.payload.pull_request.head.ref : "main";
   const skipGitHubEnvironment = (0, import_core.getInput)("skipGitHubEnvironment", { required: false }) === "true";
   const githubEnvirnmentName = (0, import_core.getInput)("githubEnvirnmentName", { required: false }) || "";
   const commentTextReplacement = (0, import_core.getInput)("commentTextReplacement", { required: false }) || "";
   const commentTitleReplacement = (0, import_core.getInput)("commentTitleReplacement", { required: false }) || "Cloudflare Pages Deployment";
-  const octokit = (0, import_github.getOctokit)(gitHubToken);
+  const octokit = (0, import_github2.getOctokit)(gitHubToken);
   const createPagesDeployment = async () => {
     await src_default`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
@@ -25897,9 +25896,9 @@ try {
   };
   const createGitHubDeployment = async () => {
     const deployment = await octokit.rest.repos.createDeployment({
-      owner: import_github.context.repo.owner,
-      repo: import_github.context.repo.repo,
-      ref: import_github.context.ref,
+      owner: import_github2.context.repo.owner,
+      repo: import_github2.context.repo.repo,
+      ref: import_github2.context.ref,
       auto_merge: false,
       description: "Cloudflare Pages Deployments",
       required_contexts: []
@@ -25915,8 +25914,8 @@ try {
     productionEnvironment
   }) => {
     await octokit.rest.repos.createDeploymentStatus({
-      owner: import_github.context.repo.owner,
-      repo: import_github.context.repo.repo,
+      owner: import_github2.context.repo.owner,
+      repo: import_github2.context.repo.repo,
       deployment_id: id,
       environment: environmentName,
       environment_url: url,
@@ -25938,7 +25937,7 @@ try {
     (0, import_core.setOutput)("url", deploymentUrl);
     (0, import_core.setOutput)("alias_url", deploymentAliasUrl);
     (0, import_core.setOutput)("environment", pagesDeployment.environment);
-    await createOrUpdateDeploymentComment(octokit, import_github.context, projectName, deploymentUrl, deploymentAliasUrl, js_yaml_default.load(commentTextReplacement), commentTitleReplacement);
+    await createOrUpdateDeploymentComment(octokit, import_github2.context, projectName, deploymentUrl, deploymentAliasUrl, js_yaml_default.load(commentTextReplacement), commentTitleReplacement);
     const url = new URL(pagesDeployment.url);
     const productionEnvironment = pagesDeployment.environment === "production";
     const environmentName = githubEnvirnmentName !== "" ? githubEnvirnmentName : productionEnvironment ? "Production" : `Preview (${url.host.split(".")[0]})`;

@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@actions/core': ^1.8.0
   '@actions/github': ^5.0.1
+  '@octokit/webhooks-types': ^6.7.0
   '@types/js-yaml': ^4.0.5
   esbuild: ^0.14.38
   husky: ^8.0.1
@@ -15,6 +16,7 @@ specifiers:
 dependencies:
   '@actions/core': 1.10.0
   '@actions/github': 5.1.1
+  '@octokit/webhooks-types': 6.7.0
   js-yaml: 4.1.0
   shellac: 0.7.2
   undici: 5.12.0
@@ -147,6 +149,10 @@ packages:
     resolution: {integrity: sha512-eJ2jbzjdijiL3B4PrSQaSjuF2sPEQPVCPzBvTHJD9Nz+9dw2SGH4K4xeQJ77YfTq5bRQ+bD8wT11JbeDPmxmGg==}
     dependencies:
       '@octokit/openapi-types': 12.11.0
+    dev: false
+
+  /@octokit/webhooks-types/6.7.0:
+    resolution: {integrity: sha512-bykm7UkSnxmb2uhSfcLM1Pity/LQ6ZBSdzy9HU0vXjR+2g+tzlmRhXb7Go8oj0TlgO+vDrTivGXju6zkzOGKjA==}
     dev: false
 
   /@types/js-yaml/4.0.5:

@@ -1,4 +1,5 @@
 import { context, getOctokit } from "@actions/github";
+import { PullRequest } from "@octokit/webhooks-types";
 
 /** Comment */
 interface Comment {
@@ -102,7 +103,7 @@ export async function createOrUpdateDeploymentComment(
 ) {
   const newComment = cloudflarePagesDeploymentStatusCommentTemplate(
     projectName,
-    ctx.sha,
+    context.payload.pull_request ? (context.payload.pull_request as PullRequest).head.sha : ctx.sha,
     url,
     aliasUrl,
     textReplacementMap, 
