@@ -90,6 +90,7 @@ try {
     }
 
     const pagesDeployment = await createPagesDeployment();
+    debug(`Pages Deployment: ${JSON.stringify(pagesDeployment)}`);
 
     const deploymentUrl = pagesDeployment.url;
     const deploymentAliasUrl = pagesDeployment.aliases?.[0] || '';

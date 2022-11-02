@@ -23166,6 +23166,7 @@ async function createOrUpdateDeploymentComment(octokit, ctx, projectName, url, a
     titleReplacement.trim() || "Cloudflare Pages Deployment"
   );
   if (!foundComment) {
+    (0, import_core.debug)("not found comment, creating new one");
     await octokit.rest.issues.createComment({
       owner: ctx.repo.owner,
       repo: ctx.repo.repo,
@@ -23173,6 +23174,7 @@ async function createOrUpdateDeploymentComment(octokit, ctx, projectName, url, a
       body: newComment
     });
   } else {
+    (0, import_core.debug)("found existing comment: " + JSON.stringify(foundComment));
     await octokit.rest.issues.updateComment({
       owner: ctx.repo.owner,
       repo: ctx.repo.repo,
@@ -25933,6 +25935,7 @@ try {
       gitHubDeployment = await createGitHubDeployment();
     }
     const pagesDeployment = await createPagesDeployment();
+    (0, import_core2.debug)(`Pages Deployment: ${JSON.stringify(pagesDeployment)}`);
     const deploymentUrl = pagesDeployment.url;
     const deploymentAliasUrl = pagesDeployment.aliases?.[0] || "";
     (0, import_core2.setOutput)("id", pagesDeployment.id);

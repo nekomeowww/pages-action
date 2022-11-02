@@ -118,6 +118,8 @@ export async function createOrUpdateDeploymentComment(
     titleReplacement.trim() || 'Cloudflare Pages Deployment'
   );
   if (!foundComment) {
+    debug('not found comment, creating new one');
+
     await octokit.rest.issues.createComment({
       owner: ctx.repo.owner,
       repo: ctx.repo.repo,
@@ -125,6 +127,8 @@ export async function createOrUpdateDeploymentComment(
       body: newComment,
     });
   } else {
+    debug('found existing comment: ' + JSON.stringify(foundComment))
+
     await octokit.rest.issues.updateComment({
       owner: ctx.repo.owner,
       repo: ctx.repo.repo,
