@@ -16,13 +16,15 @@ interface Comment {
  * Code originally written by peter-evans from [peter-evans/find-comment: A GitHub action to find an issue or pull request comment](https://github.com/peter-evans/find-comment)
  * @param octokit Octokit instance
  * @param ctx GitHub context
- * @param bodyIncludes text to search for in the comment body
+ * @param bodyIncludesTitle title text to search for in the comment body
+ * @param bodyIncludesProjectName project name to search for in the comment body
  * @returns
  */
 async function findComment(
   octokit: ReturnType<typeof getOctokit>,
   ctx: typeof context,
-  bodyIncludes: string
+  bodyIncludesTitle: string,
+  bodyIncludesProjectName: string
 ): Promise<Comment | undefined> {
   const parameters = {
     owner: ctx.repo.owner,
@@ -34,10 +36,9 @@ async function findComment(
     octokit.rest.issues.listComments,
     parameters
   )) {
-    comments.forEach(c => debug(JSON.stringify(c)))
     // Search each page for the comment
     const comment = comments.find((comment) =>
-      findCommentPredicate(bodyIncludes, comment)
+      findCommentPredicate(comment, bodyIncludesTitle, bodyIncludesProjectName)
     );
     if (comment) return comment;
   }
@@ -48,17 +49,18 @@ async function findComment(
 /**
  * findCommentPredicate predicate function to find a comment
  * Code originally written by peter-evans from [peter-evans/find-comment: A GitHub action to find an issue or pull request comment](https://github.com/peter-evans/find-comment)
- * @param commentAuthor
- * @param bodyIncludes
+ * @param bodyIncludesTitle
+ * @param bodyIncludesProjectName
  * @param comment
  * @returns
  */
 function findCommentPredicate(
-  bodyIncludes: string,
-  comment: Comment
+  comment: Comment,
+  bodyIncludesTitle: string,
+  bodyIncludesProjectName: string
 ): boolean {
   return (
-    (bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true)
+    (bodyIncludesTitle && comment.body ? comment.body.includes(bodyIncludesTitle) : true) && (bodyIncludesProjectName && comment.body ? comment.body.includes(bodyIncludesProjectName) : true)
   );
 }
 
@@ -111,7 +113,8 @@ export async function createOrUpdateDeploymentComment(
   const foundComment = await findComment(
     octokit,
     ctx,
-    titleReplacement.trim() || 'Cloudflare Pages Deployment'
+    titleReplacement.trim() || 'Cloudflare Pages Deployment',
+    projectName,
   );
   if (!foundComment) {
     debug('not found comment, creating new one');

@@ -23119,7 +23119,7 @@ var import_undici = __toESM(require_undici());
 // src/comments.ts
 var import_core = __toESM(require_core());
 var import_github = __toESM(require_github());
-async function findComment(octokit, ctx, bodyIncludes) {
+async function findComment(octokit, ctx, bodyIncludesTitle, bodyIncludesProjectName) {
   const parameters = {
     owner: ctx.repo.owner,
     repo: ctx.repo.repo,
@@ -23129,17 +23129,16 @@ async function findComment(octokit, ctx, bodyIncludes) {
     octokit.rest.issues.listComments,
     parameters
   )) {
-    comments.forEach((c) => (0, import_core.debug)(JSON.stringify(c)));
     const comment = comments.find(
-      (comment2) => findCommentPredicate(bodyIncludes, comment2)
+      (comment2) => findCommentPredicate(comment2, bodyIncludesTitle, bodyIncludesProjectName)
     );
     if (comment)
       return comment;
   }
   return void 0;
 }
-function findCommentPredicate(bodyIncludes, comment) {
-  return bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true;
+function findCommentPredicate(comment, bodyIncludesTitle, bodyIncludesProjectName) {
+  return (bodyIncludesTitle && comment.body ? comment.body.includes(bodyIncludesTitle) : true) && (bodyIncludesProjectName && comment.body ? comment.body.includes(bodyIncludesProjectName) : true);
 }
 var cloudflarePagesDeploymentStatusCommentTemplate = (projectName, commit, url, aliasUrl, textReplacementMap, titleReplacement) => {
   return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement.trim() || "Cloudflare Pages Deployment"}
@@ -23163,7 +23162,8 @@ async function createOrUpdateDeploymentComment(octokit, ctx, projectName, url, a
   const foundComment = await findComment(
     octokit,
     ctx,
-    titleReplacement.trim() || "Cloudflare Pages Deployment"
+    titleReplacement.trim() || "Cloudflare Pages Deployment",
+    projectName
   );
   if (!foundComment) {
     (0, import_core.debug)("not found comment, creating new one");
