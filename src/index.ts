@@ -1,4 +1,4 @@
-import { getInput, setOutput, setFailed } from "@actions/core";
+import { getInput, setOutput, setFailed, debug } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
@@ -7,6 +7,8 @@ import { Deployment } from "./types";
 import yaml from 'js-yaml'
 
 try {
+  debug(JSON.stringify(context))
+
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
