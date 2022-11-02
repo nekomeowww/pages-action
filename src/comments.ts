@@ -1,3 +1,4 @@
+import { debug } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { PullRequest } from "@octokit/webhooks-types";
 
@@ -33,6 +34,7 @@ async function findComment(
     octokit.rest.issues.listComments,
     parameters
   )) {
+    comments.forEach(c => debug(JSON.stringify(c)))
     // Search each page for the comment
     const comment = comments.find((comment) =>
       findCommentPredicate(ctx.repo.owner, bodyIncludes, comment)
@@ -74,7 +76,7 @@ const cloudflarePagesDeploymentStatusCommentTemplate = (
   textReplacementMap: Record<string, string>,
   titleReplacement: string
 ) => {
-  return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement || 'Cloudflare Pages Deployment'}
+  return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement.trim() || 'Cloudflare Pages Deployment'}
 
 | ${textReplacementMap.latestCommit.trim() || 'Latest commit'} | ${commit} |
 |:--------------|:----------|
@@ -113,7 +115,7 @@ export async function createOrUpdateDeploymentComment(
   const foundComment = await findComment(
     octokit,
     ctx,
-    titleReplacement || 'Cloudflare Pages Deployment'
+    titleReplacement.trim() || 'Cloudflare Pages Deployment'
   );
   if (!foundComment) {
     await octokit.rest.issues.createComment({

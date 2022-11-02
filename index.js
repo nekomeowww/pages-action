@@ -860,7 +860,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug2("making CONNECT request");
+      debug3("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -880,7 +880,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug2(
+          debug3(
             "tunneling socket could not be established, statusCode=%d",
             res.statusCode
           );
@@ -892,7 +892,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug2("got illegal response body from proxy");
+          debug3("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -900,13 +900,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug2("tunneling connection has established");
+        debug3("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug2(
+        debug3(
           "tunneling socket could not be established, cause=%s\n",
           cause.message,
           cause.stack
@@ -968,9 +968,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug2;
+    var debug3;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug2 = function() {
+      debug3 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -980,10 +980,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug2 = function() {
+      debug3 = function() {
       };
     }
-    exports.debug = debug2;
+    exports.debug = debug3;
   }
 });
 
@@ -2105,10 +2105,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug2(message) {
+    function debug3(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug2;
+    exports.debug = debug3;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -22106,7 +22106,7 @@ var require_undici = __commonJS({
 });
 
 // src/index.ts
-var import_core = __toESM(require_core());
+var import_core2 = __toESM(require_core());
 var import_github2 = __toESM(require_github());
 
 // node_modules/.pnpm/shellac@0.7.2/node_modules/shellac/dist/index.js
@@ -23117,6 +23117,7 @@ var src_default = shellac;
 var import_undici = __toESM(require_undici());
 
 // src/comments.ts
+var import_core = __toESM(require_core());
 var import_github = __toESM(require_github());
 async function findComment(octokit, ctx, bodyIncludes) {
   const parameters = {
@@ -23128,6 +23129,7 @@ async function findComment(octokit, ctx, bodyIncludes) {
     octokit.rest.issues.listComments,
     parameters
   )) {
+    comments.forEach((c) => (0, import_core.debug)(JSON.stringify(c)));
     const comment = comments.find(
       (comment2) => findCommentPredicate(ctx.repo.owner, bodyIncludes, comment2)
     );
@@ -23140,7 +23142,7 @@ function findCommentPredicate(commentAuthor, bodyIncludes, comment) {
   return (commentAuthor && comment.user ? comment.user.login === commentAuthor : true) && (bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true);
 }
 var cloudflarePagesDeploymentStatusCommentTemplate = (projectName, commit, url, aliasUrl, textReplacementMap, titleReplacement) => {
-  return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement || "Cloudflare Pages Deployment"}
+  return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement.trim() || "Cloudflare Pages Deployment"}
 
 | ${textReplacementMap.latestCommit.trim() || "Latest commit"} | ${commit} |
 |:--------------|:----------|
@@ -23161,7 +23163,7 @@ async function createOrUpdateDeploymentComment(octokit, ctx, projectName, url, a
   const foundComment = await findComment(
     octokit,
     ctx,
-    titleReplacement || "Cloudflare Pages Deployment"
+    titleReplacement.trim() || "Cloudflare Pages Deployment"
   );
   if (!foundComment) {
     await octokit.rest.issues.createComment({
@@ -25865,16 +25867,16 @@ var js_yaml_default = jsYaml;
 
 // src/index.ts
 try {
-  const apiToken = (0, import_core.getInput)("apiToken", { required: true });
-  const accountId = (0, import_core.getInput)("accountId", { required: true });
-  const projectName = (0, import_core.getInput)("projectName", { required: true });
-  const directory = (0, import_core.getInput)("directory", { required: true });
-  const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: true });
-  const branch = (0, import_core.getInput)("branch", { required: false }) || import_github2.context.payload.pull_request ? import_github2.context.payload.pull_request.head.ref : "main";
-  const skipGitHubEnvironment = (0, import_core.getInput)("skipGitHubEnvironment", { required: false }) === "true";
-  const githubEnvirnmentName = (0, import_core.getInput)("githubEnvirnmentName", { required: false }) || "";
-  const commentTextReplacement = (0, import_core.getInput)("commentTextReplacement", { required: false }) || "";
-  const commentTitleReplacement = (0, import_core.getInput)("commentTitleReplacement", { required: false }) || "Cloudflare Pages Deployment";
+  const apiToken = (0, import_core2.getInput)("apiToken", { required: true });
+  const accountId = (0, import_core2.getInput)("accountId", { required: true });
+  const projectName = (0, import_core2.getInput)("projectName", { required: true });
+  const directory = (0, import_core2.getInput)("directory", { required: true });
+  const gitHubToken = (0, import_core2.getInput)("gitHubToken", { required: true });
+  const branch = (0, import_core2.getInput)("branch", { required: false }) || import_github2.context.payload.pull_request ? import_github2.context.payload.pull_request.head.ref : "main";
+  const skipGitHubEnvironment = (0, import_core2.getInput)("skipGitHubEnvironment", { required: false }) === "true";
+  const githubEnvirnmentName = (0, import_core2.getInput)("githubEnvirnmentName", { required: false }) || "";
+  const commentTextReplacement = (0, import_core2.getInput)("commentTextReplacement", { required: false }) || "";
+  const commentTitleReplacement = (0, import_core2.getInput)("commentTitleReplacement", { required: false }) || "Cloudflare Pages Deployment";
   const octokit = (0, import_github2.getOctokit)(gitHubToken);
   const createPagesDeployment = async () => {
     await src_default`
@@ -25933,10 +25935,10 @@ try {
     const pagesDeployment = await createPagesDeployment();
     const deploymentUrl = pagesDeployment.url;
     const deploymentAliasUrl = pagesDeployment.aliases?.[0] || "";
-    (0, import_core.setOutput)("id", pagesDeployment.id);
-    (0, import_core.setOutput)("url", deploymentUrl);
-    (0, import_core.setOutput)("alias_url", deploymentAliasUrl);
-    (0, import_core.setOutput)("environment", pagesDeployment.environment);
+    (0, import_core2.setOutput)("id", pagesDeployment.id);
+    (0, import_core2.setOutput)("url", deploymentUrl);
+    (0, import_core2.setOutput)("alias_url", deploymentAliasUrl);
+    (0, import_core2.setOutput)("environment", pagesDeployment.environment);
     await createOrUpdateDeploymentComment(octokit, import_github2.context, projectName, deploymentUrl, deploymentAliasUrl, js_yaml_default.load(commentTextReplacement), commentTitleReplacement);
     const url = new URL(pagesDeployment.url);
     const productionEnvironment = pagesDeployment.environment === "production";
@@ -25951,7 +25953,7 @@ try {
     }
   })();
 } catch (thrown) {
-  (0, import_core.setFailed)(thrown.message);
+  (0, import_core2.setFailed)(thrown.message);
 }
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
