@@ -23141,17 +23141,17 @@ function findCommentPredicate(commentAuthor, bodyIncludes, comment) {
 var cloudflarePagesDeploymentStatusCommentTemplate = (projectName, commit, url, aliasUrl, textReplacementMap, titleReplacement) => {
   return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement || "Cloudflare Pages Deployment"}
 
-| Latest commit | ${commit} |
+| ${textReplacementMap.latestCommit.trim() || "Latest commit"} | ${commit} |
 |:--------------|:----------|
-| **${textReplacementMap.projectName || "Project Name"}** | ${projectName} |
-| **${textReplacementMap.status || "Status"} ** | ${textReplacementMap.deployStatusSuccess || "\u2705  Deploy successful!"} |
-| **${textReplacementMap.previewUrl || "Preview URL"}** | ${url} |
-| **${textReplacementMap.branchPreviewUrl || "Branch Preview URL"}** | ${aliasUrl} |`;
+| **${textReplacementMap.projectName.trim() || "Project Name"}** | ${projectName} |
+| **${textReplacementMap.status.trim() || "Status"}** | ${textReplacementMap.deployStatusSuccess.trim() || "\u2705  Deploy successful!"} |
+| **${textReplacementMap.previewUrl.trim() || "Preview URL"}** | ${url} |
+| **${textReplacementMap.branchPreviewUrl.trim() || "Branch Preview URL"}** | ${aliasUrl} |`;
 };
 async function createOrUpdateDeploymentComment(octokit, ctx, projectName, url, aliasUrl, textReplacementMap, titleReplacement) {
   const newComment = cloudflarePagesDeploymentStatusCommentTemplate(
-    ctx.sha,
     projectName,
+    ctx.sha,
     url,
     aliasUrl,
     textReplacementMap,
@@ -25865,6 +25865,7 @@ var js_yaml_default = jsYaml;
 // src/index.ts
 try {
   (0, import_core.debug)(JSON.stringify(import_github.context));
+  console.log(JSON.stringify(import_github.context));
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
   const accountId = (0, import_core.getInput)("accountId", { required: true });
   const projectName = (0, import_core.getInput)("projectName", { required: true });

@@ -8,6 +8,7 @@ import yaml from 'js-yaml'
 
 try {
   debug(JSON.stringify(context))
+  console.log(JSON.stringify(context))
 
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
