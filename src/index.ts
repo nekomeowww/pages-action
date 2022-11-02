@@ -4,6 +4,7 @@ import shellac from "shellac";
 import { fetch } from "undici";
 import { createOrUpdateDeploymentComment } from "./comments";
 import { Deployment } from "./types";
+import yaml from 'js-yaml'
 
 try {
   const apiToken = getInput("apiToken", { required: true });
@@ -14,6 +15,8 @@ try {
   const branch = getInput("branch", { required: false });
   const skipGitHubEnvironment = getInput("skipGitHubEnvironment", {required: false}) === 'true';
   const githubEnvirnmentName = getInput("githubEnvirnmentName", {required: false}) || '';
+  const commentTextReplacement = getInput("commentTextReplacement", {required: false}) || '';
+  const commentTitleReplacement = getInput("commentTitleReplacement", {required: false}) || 'Cloudflare Pages Deployment';
 
   const octokit = getOctokit(gitHubToken);
 
@@ -87,15 +90,15 @@ try {
 
     const pagesDeployment = await createPagesDeployment();
 
-    const deploymentURL = pagesDeployment.url;
-    const deploymentAliasURL = pagesDeployment.aliases?.[0] || '';
+    const deploymentUrl = pagesDeployment.url;
+    const deploymentAliasUrl = pagesDeployment.aliases?.[0] || '';
 
     setOutput("id", pagesDeployment.id);
-    setOutput("url", deploymentURL);
-    setOutput("alias_url", deploymentAliasURL);
+    setOutput("url", deploymentUrl);
+    setOutput("alias_url", deploymentAliasUrl);
     setOutput("environment", pagesDeployment.environment);
 
-    await createOrUpdateDeploymentComment(octokit, context, deploymentURL, deploymentAliasURL);
+    await createOrUpdateDeploymentComment(octokit, context, projectName, deploymentUrl, deploymentAliasUrl, yaml.load(commentTextReplacement) as Record<string, string>, commentTitleReplacement);
 
     const url = new URL(pagesDeployment.url);
     const productionEnvironment = pagesDeployment.environment === "production";

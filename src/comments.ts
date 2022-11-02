@@ -2,12 +2,12 @@ import { context, getOctokit } from "@actions/github";
 
 /** Comment */
 interface Comment {
-    id: number
-    body?: string
-    user: {
-      login: string
-    } | null
-  }
+  id: number;
+  body?: string;
+  user: {
+    login: string;
+  } | null;
+}
 
 /**
  * findComment find a comment in a list of comments
@@ -15,12 +15,12 @@ interface Comment {
  * @param octokit Octokit instance
  * @param ctx GitHub context
  * @param bodyIncludes text to search for in the comment body
- * @returns 
+ * @returns
  */
 async function findComment(
   octokit: ReturnType<typeof getOctokit>,
   ctx: typeof context,
-  bodyIncludes: string,
+  bodyIncludes: string
 ): Promise<Comment | undefined> {
   const parameters = {
     owner: ctx.repo.owner,
@@ -45,31 +45,43 @@ async function findComment(
 /**
  * findCommentPredicate predicate function to find a comment
  * Code originally written by peter-evans from [peter-evans/find-comment: A GitHub action to find an issue or pull request comment](https://github.com/peter-evans/find-comment)
- * @param commentAuthor 
- * @param bodyIncludes 
- * @param comment 
- * @returns 
+ * @param commentAuthor
+ * @param bodyIncludes
+ * @param comment
+ * @returns
  */
-function findCommentPredicate(commentAuthor: string, bodyIncludes: string, comment: Comment): boolean {
-    return (
-      (commentAuthor && comment.user
-        ? comment.user.login === commentAuthor
-        : true) &&
-      (bodyIncludes && comment.body
-        ? comment.body.includes(bodyIncludes)
-        : true)
-    )
-  }
+function findCommentPredicate(
+  commentAuthor: string,
+  bodyIncludes: string,
+  comment: Comment
+): boolean {
+  return (
+    (commentAuthor && comment.user
+      ? comment.user.login === commentAuthor
+      : true) &&
+    (bodyIncludes && comment.body ? comment.body.includes(bodyIncludes) : true)
+  );
+}
 
-const cloudflarePagesDeploymentStatusCommentTemplate = (commit: string, url: string, alias_url: string) => {
-    return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;Cloudflare Pages Deployment
+
+
+const cloudflarePagesDeploymentStatusCommentTemplate = (
+  projectName: string,
+  commit: string,
+  url: string,
+  aliasUrl: string,
+  textReplacementMap: Record<string, string>,
+  titleReplacement: string
+) => {
+  return `## &nbsp;<a href="https://pages.dev"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> &nbsp;${titleReplacement || 'Cloudflare Pages Deployment'}
 
 | Latest commit | ${commit} |
-|:--|:--|
-| **Status** | ✅  Deploy successful! |
-| **Preview URL** | ${url} |
-| **Branch Preview URL** | ${alias_url} |`
-}
+|:--------------|:----------|
+| **${textReplacementMap.projectName || 'Project Name'}** | ${projectName} |
+| **${textReplacementMap.status || 'Status'} ** | ${textReplacementMap.deployStatusSuccess || '✅  Deploy successful!'} |
+| **${textReplacementMap.previewUrl || 'Preview URL'}** | ${url} |
+| **${textReplacementMap.branchPreviewUrl || 'Branch Preview URL'}** | ${aliasUrl} |`;
+};
 
 /**
  * createOrUpdateDeploymentComment create or update a comment on a pull request
@@ -77,25 +89,44 @@ const cloudflarePagesDeploymentStatusCommentTemplate = (commit: string, url: str
  * @param octokit Octokit instance
  * @param ctx GitHub context
  * @param url preview URL to comment
- * @param alias_url branch preview URL to comment
+ * @param aliasUrl branch preview URL to comment
  */
-export async function createOrUpdateDeploymentComment(octokit: ReturnType<typeof getOctokit>, ctx: typeof context, url: string, alias_url: string) {
-    const newComment = cloudflarePagesDeploymentStatusCommentTemplate(ctx.sha, url, alias_url)
+export async function createOrUpdateDeploymentComment(
+  octokit: ReturnType<typeof getOctokit>,
+  ctx: typeof context,
+  projectName: string,
+  url: string,
+  aliasUrl: string,
+  textReplacementMap: Record<string, string>,
+  titleReplacement: string
+) {
+  const newComment = cloudflarePagesDeploymentStatusCommentTemplate(
+    ctx.sha,
+    projectName,
+    url,
+    aliasUrl,
+    textReplacementMap, 
+    titleReplacement,
+  );
 
-    const foundComment = await findComment(octokit, ctx, 'Cloudflare Pages Deployment')
-    if (!foundComment) {
-      await octokit.rest.issues.createComment({
-        owner: ctx.repo.owner,
-        repo: ctx.repo.repo,
-        issue_number: ctx.issue.number,
-        body: newComment,
-      })
-    } else {
-      await octokit.rest.issues.updateComment({
-        owner: ctx.repo.owner,
-        repo: ctx.repo.repo,
-        comment_id: foundComment.id,
-        body: newComment,
-      })
-    }
+  const foundComment = await findComment(
+    octokit,
+    ctx,
+    titleReplacement || 'Cloudflare Pages Deployment'
+  );
+  if (!foundComment) {
+    await octokit.rest.issues.createComment({
+      owner: ctx.repo.owner,
+      repo: ctx.repo.repo,
+      issue_number: ctx.issue.number,
+      body: newComment,
+    });
+  } else {
+    await octokit.rest.issues.updateComment({
+      owner: ctx.repo.owner,
+      repo: ctx.repo.repo,
+      comment_id: foundComment.id,
+      body: newComment,
+    });
+  }
 }

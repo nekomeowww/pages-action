@@ -28,6 +28,12 @@ inputs:
   githubEnvirnmentName:
     description: "Specifies the name of GitHub Environments"
     required: false
+  commentTextReplacement:
+    description: "Replace texts for comment texts"
+    required: false
+  commentTitleReplacement:
+    description: "Replace title for comment title"
+    required: false
 runs:
   using: "node16"
   main: "index.js"
