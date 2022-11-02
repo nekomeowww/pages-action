@@ -2,50 +2,8 @@ import { getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
-
-// TODO: Confirm types
-
-interface Stage {
-  name: string;
-  started_on: null | string;
-  ended_on: null | string;
-  status: string;
-}
-
-interface Deployment {
-  id: string;
-  short_id: string;
-  project_id: string;
-  project_name: string;
-  environment: string;
-  url: string;
-  created_on: string;
-  modified_on: string;
-  latest_stage: Stage;
-  deployment_trigger: {
-    type: string;
-    metadata: {
-      branch: string;
-      commit_hash: string;
-      commit_message: string;
-      commit_dirty: boolean;
-    };
-  };
-  stages: Stage[];
-  build_config: {
-    build_command: null | string;
-    destination_dir: null | string;
-    root_dir: null | string;
-    web_analytics_tag: null | string;
-    web_analytics_token: null | string;
-    fast_builds: boolean;
-  };
-  env_vars: unknown;
-  kv_namespaces: Record<string, { namespace_id: string }>;
-  aliases: null | string[];
-  is_skipped: boolean;
-  production_branch: string;
-}
+import { createOrUpdateDeploymentComment } from "./comments";
+import { Deployment } from "./types";
 
 try {
   const apiToken = getInput("apiToken", { required: true });
@@ -54,6 +12,8 @@ try {
   const directory = getInput("directory", { required: true });
   const gitHubToken = getInput("gitHubToken", { required: true });
   const branch = getInput("branch", { required: false });
+  const skipGitHubEnvironment = getInput("skipGitHubEnvironment", {required: false}) === 'true';
+  const githubEnvirnmentName = getInput("githubEnvirnmentName", {required: false}) || '';
 
   const octokit = getOctokit(gitHubToken);
 
@@ -85,7 +45,7 @@ try {
       repo: context.repo.repo,
       ref: context.ref,
       auto_merge: false,
-      description: "Cloudflare Pages",
+      description: "Cloudflare Pages Deployments",
       required_contexts: [],
     });
 
@@ -120,19 +80,30 @@ try {
   };
 
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    let gitHubDeployment;
+    if (!skipGitHubEnvironment) {
+      gitHubDeployment = await createGitHubDeployment();
+    }
 
     const pagesDeployment = await createPagesDeployment();
 
+    const deploymentURL = pagesDeployment.url;
+    const deploymentAliasURL = pagesDeployment.aliases?.[0] || '';
+
     setOutput("id", pagesDeployment.id);
-    setOutput("url", pagesDeployment.url);
+    setOutput("url", deploymentURL);
+    setOutput("alias_url", deploymentAliasURL);
     setOutput("environment", pagesDeployment.environment);
+
+    await createOrUpdateDeploymentComment(octokit, context, deploymentURL, deploymentAliasURL);
 
     const url = new URL(pagesDeployment.url);
     const productionEnvironment = pagesDeployment.environment === "production";
-    const environmentName = productionEnvironment
-      ? "Production"
-      : `Preview (${url.host.split(".")[0]})`;
+    const environmentName = githubEnvirnmentName !== '' 
+      ? githubEnvirnmentName : 
+        productionEnvironment
+        ? "Production"
+        : `Preview (${url.host.split(".")[0]})`;
 
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({

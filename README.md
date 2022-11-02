@@ -6,7 +6,7 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
 
 1. Create an API token in the Cloudflare dashboard with the "Cloudflare Pages — Edit" permission.
 1. Add that API token as a secret to your GitHub repository, `CLOUDFLARE_API_TOKEN`.
-1. Create a `.github/workflows/publish.yml` file in your repository:
+1. Create a `.github/workflows/cloudflare-pages.yml` file in your repository:
 
    ```yml
    on: [push]
@@ -25,13 +25,15 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
          # Run a build step here if your project requires
 
          - name: Publish to Cloudflare Pages
-           uses: cloudflare/pages-action@1
+           uses: nekomeowww/pages-action@1
            with:
              apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
              accountId: YOUR_ACCOUNT_ID
              projectName: YOUR_PROJECT_NAME
              directory: YOUR_ASSET_DIRECTORY
              gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+             branch: YOUR_BRANCH_NAME # Optional, defaults to current branch
+             skipGithubEnvironment: true # Optional, whether to disable the use of GitHub Environment
    ```
 
 1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_ASSET_DIRECTORY` with the appropriate values to your Pages project.
@@ -61,8 +63,9 @@ If you are in a Git workspace, Wrangler will automatically pull the branch infor
 manually by adding the argument `branch: YOUR_BRANCH_NAME`.
 
 ## Outputs
-| Name          | Description                          |
-| ------------- | -------------------------------------|
-| `id`          | The ID of the pages deployment       |
-| `url`         | The URL of the pages deployment      |
-| `environment` | The environment that was deployed to |
+| Name          | Description                                  |
+| ------------- | ---------------------------------------------|
+| `id`          | The ID of the pages deployment               |
+| `url`         | The URL of the pages deployment              |
+| `alias_url`   | The URL of the alias of the pages deployment |
+| `environment` | The environment that was deployed to         |
