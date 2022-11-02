@@ -80,7 +80,7 @@ const cloudflarePagesDeploymentStatusCommentTemplate = (commit: string, url: str
  * @param alias_url branch preview URL to comment
  */
 export async function createOrUpdateDeploymentComment(octokit: ReturnType<typeof getOctokit>, ctx: typeof context, url: string, alias_url: string) {
-    const newComment = cloudflarePagesDeploymentStatusCommentTemplate(ctx.ref, url, alias_url)
+    const newComment = cloudflarePagesDeploymentStatusCommentTemplate(ctx.sha, url, alias_url)
 
     const foundComment = await findComment(octokit, ctx, 'Cloudflare Pages Deployment')
     if (!foundComment) {

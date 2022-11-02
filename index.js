@@ -23148,7 +23148,7 @@ var cloudflarePagesDeploymentStatusCommentTemplate = (commit, url, alias_url) =>
 | **Branch Preview URL** | ${alias_url} |`;
 };
 async function createOrUpdateDeploymentComment(octokit, ctx, url, alias_url) {
-  const newComment = cloudflarePagesDeploymentStatusCommentTemplate(ctx.ref, url, alias_url);
+  const newComment = cloudflarePagesDeploymentStatusCommentTemplate(ctx.sha, url, alias_url);
   const foundComment = await findComment(octokit, ctx, "Cloudflare Pages Deployment");
   if (!foundComment) {
     await octokit.rest.issues.createComment({
