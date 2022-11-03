@@ -97,8 +97,8 @@ concurrency: cloudflare-pages-${{ github.ref }}
 on: [push]
 
 jobs:
-	build:
-		runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
     strategy:
       matrix: ["app1", "app2"]
      
