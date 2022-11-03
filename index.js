@@ -25869,7 +25869,7 @@ var js_yaml_default = jsYaml;
 
 // src/index.ts
 try {
-  (0, import_core2.debug)(import_github2.context.payload);
+  (0, import_core2.debug)(JSON.stringify(import_github2.context.payload));
   const apiToken = (0, import_core2.getInput)("apiToken", { required: true });
   const accountId = (0, import_core2.getInput)("accountId", { required: true });
   const projectName = (0, import_core2.getInput)("projectName", { required: true });

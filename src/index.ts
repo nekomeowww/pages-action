@@ -8,7 +8,7 @@ import yaml from 'js-yaml'
 import { PullRequest } from "@octokit/webhooks-types";
 
 try {
-  debug(context.payload)
+  debug(JSON.stringify(context.payload))
 
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
